@@ -17,8 +17,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static org.springframework.http.HttpMethod.*;
-
 @Configuration
 @EnableMongoRepositories
 @EnableWebSecurity
@@ -32,7 +30,8 @@ public class SecurityConfiguration  {
 
 
     private static final String[] WHITE_LIST_URL = {
-            "/api/auth/**",};
+            "/api/auth/**",
+            "/api/users/**"};
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -55,7 +54,7 @@ public class SecurityConfiguration  {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        final org.springframework.web.cors.CorsConfiguration configuration = new CorsConfiguration();
+        final CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("HEAD",
                 "GET", "POST", "PUT", "DELETE", "PATCH"));

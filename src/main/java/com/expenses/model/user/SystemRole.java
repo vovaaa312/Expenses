@@ -1,11 +1,15 @@
 package com.expenses.model.user;
-import lombok.*;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.expenses.model.user.SystemPermission.*;
+import static com.expenses.model.user.SystemPermission.getAdminPermissions;
+import static com.expenses.model.user.SystemPermission.getUserPermissions;
 
 
 @RequiredArgsConstructor

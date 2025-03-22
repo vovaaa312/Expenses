@@ -37,6 +37,7 @@ public class AuthService {
     }
 
     public AuthResponse authenticate(AuthRequest request) {
+        String pass = passwordEncoder.matches(request.getPassword(), userRepository.findUserByUsername(request.getUsername()).get().getPassword()) ? "true" : "false";
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()
@@ -44,6 +45,8 @@ public class AuthService {
         );
         var user = userRepository.findUserByUsername(request.getUsername())
                 .orElseThrow();
+
+
 
         var jwtToken = jwtService.generateToken(user);
 

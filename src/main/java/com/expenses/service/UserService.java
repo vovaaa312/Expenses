@@ -1,8 +1,8 @@
 package com.expenses.service;
 
+import com.expenses.model.exception.UserNotFoundException;
 import com.expenses.model.user.SystemRole;
 import com.expenses.model.user.User;
-import com.expenses.model.exception.UserNotFoundException;
 import com.expenses.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,26 +54,31 @@ public class UserService {
 //        return Optional.of(userRepository.save(existingUser));
 //    }
 
-    public Optional<User> updateAuthUser(String userId, User authUser) {
-        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow();
+    public User updateAuthUser(String userId, User authUser) {
+        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
+
         existingUser.setUsername(authUser.getUsername());
         existingUser.setEmail(authUser.getEmail());
-        existingUser.setPassword(passwordEncoder.encode(authUser.getPassword()));
+
+        if (authUser.getPassword() != null && !authUser.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(authUser.getPassword()));
+        }
+
         existingUser.setRole(authUser.getRole());
         existingUser.setActive(authUser.isActive());
-        return Optional.of(userRepository.save(existingUser));
+
+        return userRepository.save(existingUser);
     }
 
-
     public Optional<User> updateUsername(String userId, String newUsername) {
-        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(()->new UserNotFoundException("User not found."));
+        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
         existingUser.setUsername(newUsername);
         return Optional.of(userRepository.save(existingUser));
 
     }
 
     public Optional<User> updateEmail(String userId, String newEmail) {
-        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(()->new UserNotFoundException("User not found."));
+        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         existingUser.setEmail(newEmail);
         return Optional.of(userRepository.save(existingUser));
@@ -81,14 +86,14 @@ public class UserService {
     }
 
     public Optional<User> updatePassword(String userId, String newPassword) {
-        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(()->new UserNotFoundException("User not found."));
+        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         existingUser.setPassword(passwordEncoder.encode(newPassword));
         return Optional.of(userRepository.save(existingUser));
     }
 
     public Optional<User> updateRole(String userId, String role) {
-        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(()->new UserNotFoundException("User not found."));
+        User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         existingUser.setRole(SystemRole.valueOf(role));
         return Optional.of(userRepository.save(existingUser));
@@ -97,7 +102,7 @@ public class UserService {
 
     public Optional<User> deleteUser(String id) {
 
-        User deleted = userRepository.findAuthUsersById(id).orElseThrow(()->new UserNotFoundException("User not found."));
+        User deleted = userRepository.findAuthUsersById(id).orElseThrow(() -> new UserNotFoundException("User not found."));
         userRepository.deleteById(id);
         return Optional.of(deleted);
     }
