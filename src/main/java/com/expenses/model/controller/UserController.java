@@ -18,7 +18,6 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
-    private String errorMessage;
 
     @PreAuthorize("hasAuthority('admin:read')")
     @GetMapping("/getAll")
@@ -26,9 +25,16 @@ public class UserController {
         return ResponseEntity.ok(userService.findAll());
     }
 
-    //@PreAuthorize("hasAuthority('admin:create')")
+    @PreAuthorize("hasAuthority('admin:read')")
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> findById(@PathVariable String id) {
+        return ResponseEntity.ok(userService.findUserById(id));
+    }
+
+
+    @PreAuthorize("hasAuthority('admin:create')")
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser( @RequestBody User user){
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
 //        if (userService.findAuthUserByUsername(user.getUsername()).isPresent()) {
 //            String errorMessage = "User with username: {" + user.getUsername() + "} already exists";
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
@@ -38,35 +44,30 @@ public class UserController {
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
 //        }
 
-        return ResponseEntity.ok(userService.updateAuthUser(user.getId(),user));
+        return ResponseEntity.ok(userService.updateUser(user.getId(), user));
     }
-//    @PreAuthorize("hasAuthority('admin:create')")
+
+   @PreAuthorize("hasAuthority('admin:create')")
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody User user){
-        if (userService.findAuthUserByUsername(user.getUsername()).isPresent()) {
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        if (userService.findUserByUsername(user.getUsername()) != null) {
             String errorMessage = "User with username: {" + user.getUsername() + "} already exists";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
         }
-        if(userService.findAuthUserByEmail(user.getEmail()).isPresent()){
+        if (userService.findUserByEmail(user.getEmail()) != null) {
             String errorMessage = "User with email: {" + user.getEmail() + "} already exists";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
         }
-        return ResponseEntity.ok(userService.addUser(user).orElseThrow());
+        return ResponseEntity
+                .ok(userService.addUser(user));
     }
+    @PreAuthorize("hasAuthority('admin:delete')")
 
-    @DeleteMapping("/deleteById/{id}")
-    public ResponseEntity<Optional<?>> deleteUserById(@PathVariable String id) {
-        return ResponseEntity.ok(Optional.of(
-                userService.deleteUser(id)));
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable String id) {
+        return ResponseEntity
+                .ok(userService.deleteUser(id));
     }
-
-
-
-
-
-
-
-
 
 
 }

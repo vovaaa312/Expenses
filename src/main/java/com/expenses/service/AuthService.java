@@ -1,4 +1,5 @@
 package com.expenses.service;
+import com.expenses.model.exception.UserNotFoundException;
 import com.expenses.model.request.AuthRequest;
 import com.expenses.model.request.RegisterRequest;
 import com.expenses.model.response.AuthResponse;
@@ -53,6 +54,12 @@ public class AuthService {
         return AuthResponse.builder()
                 .jwtResponse(jwtToken)
                 .build();
+    }
+
+    public User getAuthenticatedUser(String authHeader) {
+        String token = authHeader.substring(7); // Удаляем "Bearer "
+        String userId = jwtService.extractUserId(token);
+        return userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
 

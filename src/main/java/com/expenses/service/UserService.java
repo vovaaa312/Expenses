@@ -22,39 +22,28 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> findAuthUserByEmail(String email) {
-        return userRepository.findUserByEmail(email);
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElse(null);    }
+
+    public User findUserByUsername(String username) {
+
+        return userRepository.findUserByUsername(username)
+                .orElse(null);
+
     }
 
-    public Optional<User> findAuthUserByUsername(String username) {
-        return userRepository.findUserByUsername(username);
+    public User findUserById(String id) {
+        return userRepository.findUserById(id).orElse(null);
     }
 
-    public Optional<User> findAuthUserById(String id) {
-        return userRepository.findAuthUsersById(id);
-    }
-
-    public List<User> getUsersByIds(List<String> userIds) {
-        return userRepository.findAllById(userIds);
-    }
-
-    public Optional<User> addUser(User user) {
+    public User addUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return Optional.of(userRepository.save(user));
+        return userRepository.save(user);
 
     }
 
-//    public Optional<AuthUser> updateAuthUser(AuthUser authUser) {
-//        AuthUser existingUser = userRepository.findAuthUsersById(authUser.getId()).get();
-//        existingUser.setUsername(authUser.getUsername());
-//        existingUser.setEmail(authUser.getEmail());
-//        existingUser.setPassword(passwordEncoder.encode(authUser.getPassword()));
-//        existingUser.setRole(authUser.getRole());
-//        existingUser.setActive(authUser.isActive());
-//        return Optional.of(userRepository.save(existingUser));
-//    }
-
-    public User updateAuthUser(String userId, User authUser) {
+    public User updateUser(String userId, User authUser) {
         User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         existingUser.setUsername(authUser.getUsername());
@@ -70,41 +59,41 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    public Optional<User> updateUsername(String userId, String newUsername) {
+    public User updateUsername(String userId, String newUsername) {
         User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
         existingUser.setUsername(newUsername);
-        return Optional.of(userRepository.save(existingUser));
+        return userRepository.save(existingUser);
 
     }
 
-    public Optional<User> updateEmail(String userId, String newEmail) {
+    public User updateEmail(String userId, String newEmail) {
         User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         existingUser.setEmail(newEmail);
-        return Optional.of(userRepository.save(existingUser));
+        return userRepository.save(existingUser);
 
     }
 
-    public Optional<User> updatePassword(String userId, String newPassword) {
+    public User updatePassword(String userId, String newPassword) {
         User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         existingUser.setPassword(passwordEncoder.encode(newPassword));
-        return Optional.of(userRepository.save(existingUser));
+        return userRepository.save(existingUser);
     }
 
-    public Optional<User> updateRole(String userId, String role) {
+    public User updateRole(String userId, String role) {
         User existingUser = userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
         existingUser.setRole(SystemRole.valueOf(role));
-        return Optional.of(userRepository.save(existingUser));
+        return userRepository.save(existingUser);
     }
 
 
-    public Optional<User> deleteUser(String id) {
+    public User deleteUser(String id) {
 
         User deleted = userRepository.findAuthUsersById(id).orElseThrow(() -> new UserNotFoundException("User not found."));
         userRepository.deleteById(id);
-        return Optional.of(deleted);
+        return deleted;
     }
 
 }
