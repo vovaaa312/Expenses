@@ -32,25 +32,14 @@ public class ExpenseService {
     public Expense update(Expense expense){
         Expense existedExpense = expenseRepository.findExpenseById(expense.getId()).orElseThrow();
 
-//        existedExpense.setName(expense.getName());
-//        existedExpense.setDescription(expense.getDescription());
-//        existedExpense.setPrice(expense.getPrice());
-//        existedExpense.setAmount(expense.getAmount());
-//        existedExpense.setDate(expense.getDate());
-//        existedExpense.setCategory(expense.getCategory());
-//
-//        existedExpense.setUserId(expense.getUserId());
+        existedExpense.setName(expense.getName());
+        existedExpense.setDescription(expense.getDescription());
+        existedExpense.setPrice(expense.getPrice());
+        existedExpense.setAmount(expense.getAmount());
+        existedExpense.setDate(expense.getDate());
+        existedExpense.setCategory(expense.getCategory());
 
-        existedExpense = Expense
-                .builder()
-                .name(expense.getName())
-                .description(expense.getDescription())
-                .price(expense.getPrice())
-                .amount(expense.getAmount())
-                .date(expense.getDate())
-                .category(expense.getCategory())
-                .userId(expense.getUserId())
-                .build();
+        existedExpense.setUserId(expense.getUserId());
 
         return expenseRepository.save(existedExpense);
     }

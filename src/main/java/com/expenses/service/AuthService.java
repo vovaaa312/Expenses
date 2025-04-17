@@ -59,7 +59,7 @@ public class AuthService {
     public User getAuthenticatedUser(String authHeader) {
         String token = authHeader.substring(7); // Удаляем "Bearer "
         String userId = jwtService.extractUserId(token);
-        return userRepository.findAuthUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
+        return userRepository.findUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
 

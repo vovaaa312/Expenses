@@ -1,27 +1,27 @@
-package com.expenses.model.controller;
+package com.expenses.controller;
 
-import com.expenses.model.incomes.Income;
+import com.expenses.model.expense.Expense;
 import com.expenses.service.AuthService;
-import com.expenses.service.IncomesService;
+import com.expenses.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/incomes")
+@RequestMapping("/api/expenses")
 @RequiredArgsConstructor
 @CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
-public class IncomeController {
+public class ExpenseController {
 
-    private final IncomesService incomesService;
+    private final ExpenseService expenseService;
     private final AuthService authService;
 
     @GetMapping("/findById/{id}")
     public ResponseEntity<?> findById(@PathVariable String id, @RequestHeader("Authorization") String authHeader) {
         var user = authService.getAuthenticatedUser(authHeader);
-        var income = incomesService.findById(id);
-        if (income.getUserId().equals(user.getId())) {
-            return ResponseEntity.ok(income);
+        var expense = expenseService.findById(id);
+        if (expense.getUserId().equals(user.getId())) {
+            return ResponseEntity.ok(expense);
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
@@ -30,33 +30,33 @@ public class IncomeController {
     public ResponseEntity<?> findByUserId(@PathVariable String id, @RequestHeader("Authorization") String authHeader) {
         var user = authService.getAuthenticatedUser(authHeader);
         if (user.getId().equals(id)) {
-            return ResponseEntity.ok(incomesService.findAllByUserId(id));
+            return ResponseEntity.ok(expenseService.findAllByUserId(id));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addIncome(@RequestBody Income income, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> addExpense(@RequestBody Expense expense, @RequestHeader("Authorization") String authHeader) {
         var user = authService.getAuthenticatedUser(authHeader);
-        income.setUserId(user.getId());
-        return ResponseEntity.ok(incomesService.save(income));
+        expense.setUserId(user.getId());
+        return ResponseEntity.ok(expenseService.save(expense));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateIncome(@RequestBody Income income, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> updateExpense(@RequestBody Expense expense, @RequestHeader("Authorization") String authHeader) {
         var user = authService.getAuthenticatedUser(authHeader);
-        if (income.getUserId().equals(user.getId())) {
-            return ResponseEntity.ok(incomesService.update(income));
+        if (expense.getUserId().equals(user.getId())) {
+            return ResponseEntity.ok(expenseService.update(expense));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteIncome(@PathVariable String id, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> deleteExpense(@PathVariable String id, @RequestHeader("Authorization") String authHeader) {
         var user = authService.getAuthenticatedUser(authHeader);
-        var income = incomesService.findById(id);
-        if (income.getUserId().equals(user.getId())) {
-            return ResponseEntity.ok(incomesService.delete(id));
+        var expense = expenseService.findById(id);
+        if (expense.getUserId().equals(user.getId())) {
+            return ResponseEntity.ok(expenseService.delete(id));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }

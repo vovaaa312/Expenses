@@ -31,15 +31,13 @@ public class IncomesService {
     public Income update(Income income){
         Income existedIncome = incomeRepository.findIncomeById(income.getId()).orElseThrow();
 
-        existedIncome = Income
-                .builder()
-                .name(income.getName())
-                .description(income.getDescription())
-                .amount(income.getAmount())
-                .date(income.getDate())
-                .category(income.getCategory())
-                .userId(income.getUserId())
-                .build();
+        existedIncome.setName(income.getName());
+        existedIncome.setDescription(income.getDescription());
+        existedIncome.setAmount(income.getAmount());
+        existedIncome.setDate(income.getDate());
+        existedIncome.setCategory(income.getCategory());
+        existedIncome.setUserId(income.getUserId());
+
 
         return incomeRepository.save(existedIncome);
     }

@@ -1,4 +1,4 @@
-package com.expenses.model.controller;
+package com.expenses.controller;
 
 import com.expenses.service.JwtService;
 import io.jsonwebtoken.Jwt;

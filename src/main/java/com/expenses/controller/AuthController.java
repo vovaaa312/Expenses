@@ -1,4 +1,4 @@
-package com.expenses.model.controller;
+package com.expenses.controller;
 
 import com.expenses.model.request.AuthRequest;
 import com.expenses.model.request.RegisterRequest;

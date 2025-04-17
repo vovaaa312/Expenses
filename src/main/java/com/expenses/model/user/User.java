@@ -1,5 +1,6 @@
 package com.expenses.model.user;
 
+import com.expenses.model.dTo.UserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -64,4 +65,28 @@ public class User implements UserDetails {
         return role.equals(SystemRole.SYSTEM_ADMIN);
     }
 
+
+    // converting User to UserDto
+    public static UserDto toDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setPassword(user.getPassword());
+        dto.setRole(user.getRole());
+        dto.setActive(user.isActive());
+        return dto;
+    }
+
+    // converting UserDto to User
+    public static User fromDto(UserDto dto) {
+        User user = new User();
+        user.setId(dto.getId());
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setRole(dto.getRole());
+        user.setActive(dto.isActive());
+        return user;
+    }
 }
