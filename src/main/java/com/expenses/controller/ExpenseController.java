@@ -60,4 +60,32 @@ public class ExpenseController {
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
+
+    @GetMapping("/findByDateBetween")
+    public ResponseEntity<?> findByDateBetweenAndUserId(@RequestParam String startDate, @RequestParam String endDate, @RequestHeader("Authorization") String authHeader) {
+        var user = authService.getAuthenticatedUser(authHeader);
+        return ResponseEntity.ok(expenseService.findAllByDateBetweenAndUserId(startDate, endDate, user.getId()));
+    }
+
+    @GetMapping("/findByDateAfter")
+    public ResponseEntity<?> findByDateAfterAndUserId(@RequestParam String startDate, @RequestHeader("Authorization") String authHeader) {
+        var user = authService.getAuthenticatedUser(authHeader);
+        return ResponseEntity.ok(expenseService.findAllByDateAfterAndUserId(startDate, user.getId()));
+    }
+
+    @GetMapping("/findByDateBefore")
+    public ResponseEntity<?> findByDateBeforeAndUserId(@RequestParam String endDate, @RequestHeader("Authorization") String authHeader) {
+        var user = authService.getAuthenticatedUser(authHeader);
+        return ResponseEntity.ok(expenseService.findAllByDateBeforeAndUserId(endDate, user.getId()));
+    }
+
+//    @GetMapping("/findByDateBetweenAndUser")
+//    public ResponseEntity<?> findByDateBetweenAndUser(@RequestParam String startDate, @RequestParam String endDate, @RequestParam String userId) {
+//        return ResponseEntity.ok(expenseService.findAllByDateBetweenAndUserId(startDate, endDate, userId));
+//    }
+//
+//    @GetMapping("/findByDateAfterAndUser")
+//    public ResponseEntity<?> findByDateAfterAndUser(@RequestParam String startDate, @RequestParam String userId) {
+//        return ResponseEntity.ok(expenseService.findAllByDateAfterAndUserId(startDate, userId));
+//    }
 }

@@ -60,4 +60,22 @@ public class IncomeController {
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
+
+    @GetMapping("/findByDateBetweenAndUserId")
+    public ResponseEntity<?> findByDateBetweenAndUserId(@RequestParam String startDate, @RequestParam String endDate, @RequestHeader("Authorization") String authHeader) {
+        var user = authService.getAuthenticatedUser(authHeader);
+        return ResponseEntity.ok(incomesService.findAllByDateBetweenAndUserId(startDate, endDate, user.getId()));
+    }
+
+    @GetMapping("/findByDateAfterAndUserId")
+    public ResponseEntity<?> findByDateAfterAndUserId(@RequestParam String startDate, @RequestHeader("Authorization") String authHeader) {
+        var user = authService.getAuthenticatedUser(authHeader);
+        return ResponseEntity.ok(incomesService.findAllByDateAfterAndUserId(startDate, user.getId()));
+    }
+
+    @GetMapping("/findByDateBeforeAndUserId")
+    public ResponseEntity<?> findByDateBeforeAndUserId(@RequestParam String endDate, @RequestHeader("Authorization") String authHeader) {
+        var user = authService.getAuthenticatedUser(authHeader);
+        return ResponseEntity.ok(incomesService.findAllByDateBeforeAndUserId(endDate, user.getId()));
+    }
 }

@@ -11,5 +11,15 @@ import java.util.Optional;
 public interface ExpenseRepository extends MongoRepository<Expense, String> {
 
     Optional<Expense> findExpenseById(String id);
+
     Optional<List<Expense>> findAllByUserId(String userId);
+
+    Optional<List<Expense>> findAllByDateBetween(String startDate, String endDate);
+
+    Optional<List<Expense>> findAllByDateBetweenAndUserId(String startDate, String endDate, String userId);
+
+    Optional<List<Expense>> findAllByDateAfterAndUserId(String startDate, String userId);
+
+    Optional<List<Expense>> findAllByDateBeforeAndUserId(String endDate, String userId);
+
 }

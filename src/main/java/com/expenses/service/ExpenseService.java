@@ -50,4 +50,19 @@ public class ExpenseService {
         return existedExpense;
     }
 
+    public List<Expense> findAllByDateBetween(String startDate, String endDate){
+        return expenseRepository.findAllByDateBetween(startDate, endDate).orElse(null);
+    }
+
+    public List<Expense>findAllByDateBetweenAndUserId(String startDate, String endDate, String userId){
+        return expenseRepository.findAllByDateBetweenAndUserId(startDate, endDate, userId).orElse(null);
+    }
+
+    public List<Expense> findAllByDateAfterAndUserId(String startDate, String userId){
+        return expenseRepository.findAllByDateAfterAndUserId(startDate, userId).orElse(null);
+    }
+
+    public List<Expense> findAllByDateBeforeAndUserId(String endDate, String userId){
+        return expenseRepository.findAllByDateBeforeAndUserId(endDate, userId).orElse(null);
+    }
 }
