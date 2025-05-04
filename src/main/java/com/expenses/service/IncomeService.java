@@ -6,11 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class IncomesService {
+public class IncomeService {
     private final IncomeRepository incomeRepository;
 
     public List<Income> findAll() {

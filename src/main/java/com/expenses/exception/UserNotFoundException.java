@@ -1,4 +1,4 @@
-package com.expenses.model.exception;
+package com.expenses.exception;
 
 public class UserNotFoundException extends RuntimeException{
     public UserNotFoundException() {

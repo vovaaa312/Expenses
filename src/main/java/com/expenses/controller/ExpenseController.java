@@ -1,10 +1,12 @@
 package com.expenses.controller;
 
 import com.expenses.model.expense.Expense;
+import com.expenses.model.user.User;
 import com.expenses.service.AuthService;
 import com.expenses.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,78 +16,84 @@ import org.springframework.web.bind.annotation.*;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
-    private final AuthService authService;
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<?> findById(@PathVariable String id, @RequestHeader("Authorization") String authHeader) {
-        var user = authService.getAuthenticatedUser(authHeader);
+    public ResponseEntity<?> findById(
+            @PathVariable String id,
+            @AuthenticationPrincipal User principal
+    ) {
         var expense = expenseService.findById(id);
-        if (expense.getUserId().equals(user.getId())) {
+        if (expense.getUserId().equals(principal.getId())) {
             return ResponseEntity.ok(expense);
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
 
     @GetMapping("/findByUserId/{id}")
-    public ResponseEntity<?> findByUserId(@PathVariable String id, @RequestHeader("Authorization") String authHeader) {
-        var user = authService.getAuthenticatedUser(authHeader);
-        if (user.getId().equals(id)) {
+    public ResponseEntity<?> findByUserId(
+            @PathVariable String id,
+            @AuthenticationPrincipal User principal
+    ) {
+        if (principal.getId().equals(id)) {
             return ResponseEntity.ok(expenseService.findAllByUserId(id));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addExpense(@RequestBody Expense expense, @RequestHeader("Authorization") String authHeader) {
-        var user = authService.getAuthenticatedUser(authHeader);
-        expense.setUserId(user.getId());
+    public ResponseEntity<?> addExpense(
+            @RequestBody Expense expense,
+            @AuthenticationPrincipal User principal
+    ) {
+        expense.setUserId(principal.getId());
         return ResponseEntity.ok(expenseService.save(expense));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateExpense(@RequestBody Expense expense, @RequestHeader("Authorization") String authHeader) {
-        var user = authService.getAuthenticatedUser(authHeader);
-        if (expense.getUserId().equals(user.getId())) {
+    public ResponseEntity<?> updateExpense(
+            @RequestBody Expense expense,
+            @AuthenticationPrincipal User principal
+    ) {
+        if (expense.getUserId().equals(principal.getId())) {
             return ResponseEntity.ok(expenseService.update(expense));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteExpense(@PathVariable String id, @RequestHeader("Authorization") String authHeader) {
-        var user = authService.getAuthenticatedUser(authHeader);
+    public ResponseEntity<?> deleteExpense(
+            @PathVariable String id,
+            @AuthenticationPrincipal User principal
+    ) {
         var expense = expenseService.findById(id);
-        if (expense.getUserId().equals(user.getId())) {
+        if (expense.getUserId().equals(principal.getId())) {
             return ResponseEntity.ok(expenseService.delete(id));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
 
     @GetMapping("/findByDateBetween")
-    public ResponseEntity<?> findByDateBetweenAndUserId(@RequestParam String startDate, @RequestParam String endDate, @RequestHeader("Authorization") String authHeader) {
-        var user = authService.getAuthenticatedUser(authHeader);
-        return ResponseEntity.ok(expenseService.findAllByDateBetweenAndUserId(startDate, endDate, user.getId()));
+    public ResponseEntity<?> findByDateBetweenAndUserId(
+            @RequestParam String startDate,
+            @RequestParam String endDate,
+            @AuthenticationPrincipal User principal
+    ) {
+        return ResponseEntity.ok(expenseService.findAllByDateBetweenAndUserId(startDate, endDate, principal.getId()));
     }
 
     @GetMapping("/findByDateAfter")
-    public ResponseEntity<?> findByDateAfterAndUserId(@RequestParam String startDate, @RequestHeader("Authorization") String authHeader) {
-        var user = authService.getAuthenticatedUser(authHeader);
-        return ResponseEntity.ok(expenseService.findAllByDateAfterAndUserId(startDate, user.getId()));
+    public ResponseEntity<?> findByDateAfterAndUserId(
+            @RequestParam String startDate,
+            @AuthenticationPrincipal User principal
+    ) {
+        return ResponseEntity.ok(expenseService.findAllByDateAfterAndUserId(startDate, principal.getId()));
     }
 
     @GetMapping("/findByDateBefore")
-    public ResponseEntity<?> findByDateBeforeAndUserId(@RequestParam String endDate, @RequestHeader("Authorization") String authHeader) {
-        var user = authService.getAuthenticatedUser(authHeader);
-        return ResponseEntity.ok(expenseService.findAllByDateBeforeAndUserId(endDate, user.getId()));
+    public ResponseEntity<?> findByDateBeforeAndUserId(@RequestParam String endDate,  @AuthenticationPrincipal User principal) {
+        return ResponseEntity.ok(expenseService.findAllByDateBeforeAndUserId(endDate, principal.getId()));
     }
 
-//    @GetMapping("/findByDateBetweenAndUser")
-//    public ResponseEntity<?> findByDateBetweenAndUser(@RequestParam String startDate, @RequestParam String endDate, @RequestParam String userId) {
-//        return ResponseEntity.ok(expenseService.findAllByDateBetweenAndUserId(startDate, endDate, userId));
-//    }
-//
-//    @GetMapping("/findByDateAfterAndUser")
-//    public ResponseEntity<?> findByDateAfterAndUser(@RequestParam String startDate, @RequestParam String userId) {
-//        return ResponseEntity.ok(expenseService.findAllByDateAfterAndUserId(startDate, userId));
-//    }
+
+
 }

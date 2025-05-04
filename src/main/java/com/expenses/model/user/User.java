@@ -68,25 +68,25 @@ public class User implements UserDetails {
 
     // converting User to UserDto
     public static UserDto toDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setPassword(user.getPassword());
-        dto.setRole(user.getRole());
-        dto.setActive(user.isActive());
-        return dto;
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .active(user.isActive())
+                .build();
     }
 
     // converting UserDto to User
     public static User fromDto(UserDto dto) {
-        User user = new User();
-        user.setId(dto.getId());
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        user.setRole(dto.getRole());
-        user.setActive(dto.isActive());
-        return user;
+        return User.builder()
+                .id(dto.getId())
+                .username(dto.getUsername())
+                .email(dto.getEmail())
+                .password(dto.getPassword())
+                .role(dto.getRole())
+                .active(dto.isActive())
+                .build();
     }
 }

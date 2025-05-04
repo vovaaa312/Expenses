@@ -17,24 +17,18 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserRepository userRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request)  {
-        if (userRepository.findUserByUsername(request.getUsername()).isPresent()) {
-            String errorMessage = "User with username: {" + request.getUsername() + "} already exists";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-        }
-        if(userRepository.findUserByEmail(request.getEmail()).isPresent()){
-            String errorMessage = "User with email: {" + request.getEmail() + "} already exists";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-
-        }
+    public ResponseEntity<?> register(
+            @RequestBody RegisterRequest request
+    )  {
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request) {
+    public ResponseEntity<AuthResponse> authenticate(
+            @RequestBody AuthRequest request
+    ) {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 

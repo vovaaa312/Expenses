@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('admin:read')")
     @GetMapping("/getAll")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
+    public ResponseEntity<?> getAllUsers() {
         List<UserDto> userDtos = userService
                 .findAll()
                 .stream()
@@ -44,7 +45,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('admin:update')")
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto, @AuthenticationPrincipal Object principal) {
 //        if (userService.findAuthUserByUsername(user.getUsername()).isPresent()) {
 //            String errorMessage = "User with username: {" + user.getUsername() + "} already exists";
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
@@ -79,12 +80,18 @@ public class UserController {
                 .ok(userService.deleteUser(id));
     }
 
+//    @PreAuthorize("isAuthenticated()")
+//    @GetMapping("/isAdmin")
+//    public ResponseEntity<Boolean> isAdmin(@RequestHeader("Authorization") String authHeader) {
+//        User authenticatedUser = authService.getAuthenticatedUser(authHeader);
+//        boolean isAdmin = authenticatedUser.getRole().equals(SystemRole.SYSTEM_ADMIN);
+//        return ResponseEntity.ok(isAdmin);
+//    }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/isAdmin")
-    public ResponseEntity<Boolean> isAdmin(@RequestHeader("Authorization") String authHeader) {
-        User authenticatedUser = authService.getAuthenticatedUser(authHeader);
-        boolean isAdmin = authenticatedUser.getRole().equals(SystemRole.SYSTEM_ADMIN);
-        return ResponseEntity.ok(isAdmin);
+    public ResponseEntity<Boolean> isAdmin(@AuthenticationPrincipal User principal) {
+            return ResponseEntity.ok(principal.isAdmin());
     }
 
 }

@@ -1,6 +1,8 @@
 package com.expenses.service;
 
-import com.expenses.model.exception.UserNotFoundException;
+import com.expenses.exception.UserNotFoundException;
+import com.expenses.exception.UserWithEmailExistsException;
+import com.expenses.exception.UserWithUsernameExistsException;
 import com.expenses.model.user.SystemRole;
 import com.expenses.model.user.User;
 import com.expenses.repository.UserRepository;
@@ -23,13 +25,12 @@ public class UserService {
 
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
-                .orElse(null);    }
+                .orElse(null);
+    }
 
     public User findUserByUsername(String username) {
-
         return userRepository.findUserByUsername(username)
                 .orElse(null);
-
     }
 
     public User findUserById(String id) {
@@ -40,6 +41,7 @@ public class UserService {
         if(user.getPassword().length()<4 || user.getPassword().length()>16){
             throw new IllegalArgumentException("Password length must be between 4 and 16 characters");
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
 
@@ -48,15 +50,20 @@ public class UserService {
     public User updateUser(String userId, User user) {
         User existingUser = userRepository.findUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
 
+        if (!existingUser.getUsername().equals(user.getUsername()) &&
+                userRepository.findUserByUsername(user.getUsername()).isPresent()) {
+            throw new UserWithUsernameExistsException("User with username: {" + user.getUsername() + "} already exists");
+        }
+
+        // Проверка на существующий email
+        if (!existingUser.getEmail().equals(user.getEmail()) &&
+                userRepository.findUserByEmail(user.getEmail()).isPresent()) {
+            throw new UserWithEmailExistsException("User with email: {" + user.getEmail() + "} already exists");
+        }
 
         existingUser.setUsername(user.getUsername());
         existingUser.setEmail(user.getEmail());
 
-//        boolean passNotNull = user.getPassword() != null;
-//        boolean passNotEmpty = !user.getPassword().isEmpty();
-//        boolean passNotEqualOldPass = !user.getPassword().equals(existingUser.getPassword());
-//        boolean passEqualOldPass = passwordEncoder.matches(user.getPassword(), existingUser.getPassword());
-//boolean passLength = user.getPassword().length() > 4 && user.getPassword().length() < 16;
         if (user.getPassword().length()<16) {
             existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
@@ -96,12 +103,12 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-
     public User deleteUser(String id) {
 
         User deleted = userRepository.findUsersById(id).orElseThrow(() -> new UserNotFoundException("User not found."));
         userRepository.deleteById(id);
         return deleted;
     }
+
 
 }
