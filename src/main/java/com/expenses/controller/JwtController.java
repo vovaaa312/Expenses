@@ -1,5 +1,6 @@
 package com.expenses.controller;
 
+import com.expenses.model.dTo.mapper.UserMapper;
 import com.expenses.model.user.User;
 import com.expenses.service.JwtService;
 import com.expenses.service.UserService;
@@ -22,7 +23,7 @@ public class JwtController {
     private final UserService userService;
 
 
-    //    @GetMapping("/extractUsername")
+//    @GetMapping("/extractUsername")
 //    public ResponseEntity<?> extractUsername(
 //            @RequestHeader("Authorization") String authHeader
 //    ) {
@@ -41,7 +42,7 @@ public class JwtController {
         return ResponseEntity.ok(principal.getUsername());
     }
 
-    @GetMapping("/findByUsername")
+    @GetMapping("/extractByToken")
     public ResponseEntity<?> findByUsername(
             @RequestHeader("Authorization") String authHeader
     ) {
@@ -50,6 +51,22 @@ public class JwtController {
         }
         String token = authHeader.substring(7); // Remove "Bearer " prefix
         String username = jwtService.extractUsername(token);
-        return ResponseEntity.ok(User.toDto(userService.findUserByUsername(username)));
+        User user = userService.findUserByUsername(username);
+        return ResponseEntity.ok(UserMapper.toDto(user));
     }
+
+//    @GetMapping("/findByUsername")
+//    public ResponseEntity<?> findByUsername(
+//            @AuthenticationPrincipal User principal
+//    ) {
+//
+//        return ResponseEntity.ok(UserMapper.toDto(principal));
+//    }
+
+//    @GetMapping("/extractAuthenticated")
+//    public ResponseEntity<?> extractAuthenticated(
+//            @AuthenticationPrincipal User principal
+//    ) {
+//        return ResponseEntity.ok(UserMapper.toDto(principal));
+//    }
 }

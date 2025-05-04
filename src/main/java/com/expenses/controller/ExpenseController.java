@@ -1,5 +1,7 @@
 package com.expenses.controller;
 
+import com.expenses.model.dTo.ExpenseDto;
+import com.expenses.model.dTo.mapper.ExpenseMapper;
 import com.expenses.model.expense.Expense;
 import com.expenses.model.user.User;
 import com.expenses.service.AuthService;
@@ -24,7 +26,7 @@ public class ExpenseController {
     ) {
         var expense = expenseService.findById(id);
         if (expense.getUserId().equals(principal.getId())) {
-            return ResponseEntity.ok(expense);
+            return ResponseEntity.ok(ExpenseMapper.toDto(expense));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
@@ -35,27 +37,32 @@ public class ExpenseController {
             @AuthenticationPrincipal User principal
     ) {
         if (principal.getId().equals(id)) {
-            return ResponseEntity.ok(expenseService.findAllByUserId(id));
+//            return ResponseEntity.ok(expenseService.findAllByUserId(id));
+            return ResponseEntity.ok(ExpenseMapper.toDtoList(expenseService.findAllByUserId(id)));
+
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
 
     @PostMapping("/add")
     public ResponseEntity<?> addExpense(
-            @RequestBody Expense expense,
+            @RequestBody ExpenseDto expense,
             @AuthenticationPrincipal User principal
     ) {
         expense.setUserId(principal.getId());
-        return ResponseEntity.ok(expenseService.save(expense));
+        Expense saved = expenseService.save(ExpenseMapper.toEntity(expense));
+        return ResponseEntity.ok(ExpenseMapper.toDto(saved));
     }
 
     @PutMapping("/update")
     public ResponseEntity<?> updateExpense(
-            @RequestBody Expense expense,
+            @RequestBody ExpenseDto expense,
             @AuthenticationPrincipal User principal
     ) {
+
         if (expense.getUserId().equals(principal.getId())) {
-            return ResponseEntity.ok(expenseService.update(expense));
+            Expense updated = expenseService.update(ExpenseMapper.toEntity(expense));
+            return ResponseEntity.ok(ExpenseMapper.toDto(updated));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
@@ -67,7 +74,7 @@ public class ExpenseController {
     ) {
         var expense = expenseService.findById(id);
         if (expense.getUserId().equals(principal.getId())) {
-            return ResponseEntity.ok(expenseService.delete(id));
+            return ResponseEntity.ok(ExpenseMapper.toDto(expenseService.delete(id)));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
@@ -78,7 +85,8 @@ public class ExpenseController {
             @RequestParam String endDate,
             @AuthenticationPrincipal User principal
     ) {
-        return ResponseEntity.ok(expenseService.findAllByDateBetweenAndUserId(startDate, endDate, principal.getId()));
+        return ResponseEntity.ok
+                (ExpenseMapper.toDtoList(expenseService.findAllByDateBetweenAndUserId(startDate, endDate, principal.getId())));
     }
 
     @GetMapping("/findByDateAfter")
@@ -86,12 +94,14 @@ public class ExpenseController {
             @RequestParam String startDate,
             @AuthenticationPrincipal User principal
     ) {
-        return ResponseEntity.ok(expenseService.findAllByDateAfterAndUserId(startDate, principal.getId()));
+        return ResponseEntity.ok(
+                ExpenseMapper.toDtoList(expenseService.findAllByDateAfterAndUserId(startDate, principal.getId())));
     }
 
     @GetMapping("/findByDateBefore")
     public ResponseEntity<?> findByDateBeforeAndUserId(@RequestParam String endDate,  @AuthenticationPrincipal User principal) {
-        return ResponseEntity.ok(expenseService.findAllByDateBeforeAndUserId(endDate, principal.getId()));
+        return ResponseEntity.ok(
+                ExpenseMapper.toDtoList(expenseService.findAllByDateBeforeAndUserId(endDate, principal.getId())));
     }
 
 

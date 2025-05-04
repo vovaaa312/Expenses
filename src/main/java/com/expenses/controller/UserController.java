@@ -1,6 +1,7 @@
 package com.expenses.controller;
 
 import com.expenses.model.dTo.UserDto;
+import com.expenses.model.dTo.mapper.UserMapper;
 import com.expenses.model.user.SystemRole;
 import com.expenses.model.user.User;
 import com.expenses.service.AuthService;
@@ -25,27 +26,35 @@ public class UserController {
     private final AuthService authService;
     private final UserService userService;
 
+//    @PreAuthorize("hasAuthority('admin:read')")
+//    @GetMapping("/getAll")
+//    public ResponseEntity<?> getAllUsers() {
+//        List<UserDto> userDtos = userService
+//                .findAll()
+//                .stream()
+//                .map(User::toDto)
+//                .collect(Collectors.toList());
+//        return ResponseEntity.ok(userDtos);
+//    }
+
     @PreAuthorize("hasAuthority('admin:read')")
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllUsers() {
-        List<UserDto> userDtos = userService
-                .findAll()
-                .stream()
-                .map(User::toDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userDtos);
+
+        return ResponseEntity.ok(UserMapper.toDtoList(userService.findAll()));
     }
 
     @PreAuthorize("hasAuthority('admin:read')")
     @GetMapping("/get/{id}")
     public ResponseEntity<?> findById(@PathVariable String id) {
-        return ResponseEntity.ok(userService.findUserById(id));
+        return ResponseEntity.ok(UserMapper.toDto(userService.findUserById(id)));
     }
 
 
     @PreAuthorize("hasAuthority('admin:update')")
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto, @AuthenticationPrincipal Object principal) {
+    public ResponseEntity<?> updateUser(
+            @RequestBody UserDto userDto) {
 //        if (userService.findAuthUserByUsername(user.getUsername()).isPresent()) {
 //            String errorMessage = "User with username: {" + user.getUsername() + "} already exists";
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
@@ -55,29 +64,23 @@ public class UserController {
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
 //        }
 
-        User updatedUser = userService.updateUser(userDto.getId(), User.fromDto(userDto));
-        return ResponseEntity.ok(User.toDto(updatedUser));    }
+        User updatedUser = userService.updateUser(userDto.getId(), UserMapper.toEntity(userDto));
+        return ResponseEntity.ok(UserMapper.toDto(updatedUser));
+    }
 
     @PreAuthorize("hasAuthority('admin:create')")
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        if (userService.findUserByUsername(user.getUsername()) != null) {
-            String errorMessage = "User with username: {" + user.getUsername() + "} already exists";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-        }
-        if (userService.findUserByEmail(user.getEmail()) != null) {
-            String errorMessage = "User with email: {" + user.getEmail() + "} already exists";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-        }
+    public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
+
         return ResponseEntity
-                .ok(userService.addUser(user));
+                .ok(userService.addUser(UserMapper.toEntity(userDto)));
     }
 
     @PreAuthorize("hasAuthority('admin:delete')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable String id) {
         return ResponseEntity
-                .ok(userService.deleteUser(id));
+                .ok(UserMapper.toDto(userService.deleteUser(id)));
     }
 
 //    @PreAuthorize("isAuthenticated()")

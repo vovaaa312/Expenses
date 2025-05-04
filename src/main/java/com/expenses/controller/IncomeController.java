@@ -1,5 +1,7 @@
 package com.expenses.controller;
 
+import com.expenses.model.dTo.IncomeDto;
+import com.expenses.model.dTo.mapper.IncomeMapper;
 import com.expenses.model.incomes.Income;
 import com.expenses.model.user.User;
 import com.expenses.service.IncomeService;
@@ -24,7 +26,7 @@ public class IncomeController {
     ) {
         var income = incomesService.findById(id);
         if (income.getUserId().equals(principal.getId())) {
-            return ResponseEntity.ok(income);
+            return ResponseEntity.ok(IncomeMapper.toDto(income));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
@@ -36,7 +38,7 @@ public class IncomeController {
             @AuthenticationPrincipal User principal
     ) {
         if (principal.getId().equals(id)) {
-            return ResponseEntity.ok(incomesService.findAllByUserId(id));
+            return ResponseEntity.ok(IncomeMapper.toDtoList(incomesService.findAllByUserId(id)));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
@@ -44,20 +46,22 @@ public class IncomeController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addIncome(
-            @RequestBody Income income,
+            @RequestBody IncomeDto incomeDto,
             @AuthenticationPrincipal User principal
     ) {
-        income.setUserId(principal.getId());
-        return ResponseEntity.ok(incomesService.save(income));
+        incomeDto.setUserId(principal.getId());
+        Income income = IncomeMapper.toEntity(incomeDto);
+        return ResponseEntity.ok(IncomeMapper.toDto(incomesService.save(income)));
     }
 
     @PutMapping("/update")
     public ResponseEntity<?> updateIncome(
-            @RequestBody Income income,
+            @RequestBody IncomeDto incomeDto,
             @AuthenticationPrincipal User principal
     ) {
-        if (income.getUserId().equals(principal.getId())) {
-            return ResponseEntity.ok(incomesService.update(income));
+        if (incomeDto.getUserId().equals(principal.getId())) {
+            Income updated = incomesService.update(IncomeMapper.toEntity(incomeDto));
+            return ResponseEntity.ok(IncomeMapper.toDto(updated));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
@@ -69,7 +73,7 @@ public class IncomeController {
     ) {
         var income = incomesService.findById(id);
         if (income.getUserId().equals(principal.getId())) {
-            return ResponseEntity.ok(incomesService.delete(id));
+            return ResponseEntity.ok(IncomeMapper.toDto(incomesService.delete(id)));
         }
         return ResponseEntity.status(403).body("Access Denied");
     }
@@ -80,7 +84,9 @@ public class IncomeController {
             @RequestParam String endDate,
             @AuthenticationPrincipal User principal
     ) {
-        return ResponseEntity.ok(incomesService.findAllByDateBetweenAndUserId(startDate, endDate, principal.getId()));
+        return ResponseEntity.ok(IncomeMapper.toDtoList(
+                incomesService.findAllByDateBetweenAndUserId(startDate, endDate, principal.getId())
+        ));
     }
 
     @GetMapping("/findByDateAfterAndUserId")
@@ -88,7 +94,11 @@ public class IncomeController {
             @RequestParam String startDate,
             @AuthenticationPrincipal User principal
     ) {
-        return ResponseEntity.ok(incomesService.findAllByDateAfterAndUserId(startDate, principal.getId()));
+        return ResponseEntity.ok(
+                IncomeMapper.toDtoList(
+                        incomesService.findAllByDateAfterAndUserId(startDate, principal.getId())
+                )
+        );
     }
 
     @GetMapping("/findByDateBeforeAndUserId")
@@ -96,6 +106,10 @@ public class IncomeController {
             @RequestParam String endDate,
             @AuthenticationPrincipal User principal
     ) {
-        return ResponseEntity.ok(incomesService.findAllByDateBeforeAndUserId(endDate, principal.getId()));
+        return ResponseEntity.ok(
+                IncomeMapper.toDtoList(
+                        incomesService.findAllByDateBeforeAndUserId(endDate, principal.getId())
+                )
+        );
     }
 }

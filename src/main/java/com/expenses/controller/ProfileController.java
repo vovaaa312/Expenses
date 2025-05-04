@@ -1,6 +1,7 @@
 package com.expenses.controller;
 
 import com.expenses.model.dTo.UserDto;
+import com.expenses.model.dTo.mapper.UserMapper;
 import com.expenses.model.user.User;
 import com.expenses.service.AuthService;
 import com.expenses.service.UserService;
@@ -23,7 +24,7 @@ public class ProfileController {
     public ResponseEntity<?> updateUsername(@AuthenticationPrincipal User principal,
                                             @RequestParam String newUsername) {
         User updatedUser = userService.updateUsername(principal.getId(), newUsername);
-        return ResponseEntity.ok(User.toDto(updatedUser));
+        return ResponseEntity.ok(UserMapper.toDto(updatedUser));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -31,7 +32,7 @@ public class ProfileController {
     public ResponseEntity<?> updateEmail(@AuthenticationPrincipal User principal,
                                          @RequestParam String newEmail) {
         User updatedUser = userService.updateEmail(principal.getId(), newEmail);
-        return ResponseEntity.ok(User.toDto(updatedUser));
+        return ResponseEntity.ok(UserMapper.toDto(updatedUser));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -39,6 +40,6 @@ public class ProfileController {
     public ResponseEntity<?> updatePassword(@AuthenticationPrincipal User principal,
                                             @RequestParam String newPassword) {
         User updatedUser = userService.updatePassword(principal.getId(), newPassword);
-        return ResponseEntity.ok(User.toDto(updatedUser));
+        return ResponseEntity.ok(UserMapper.toDto(updatedUser));
     }
 }

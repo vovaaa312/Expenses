@@ -35,7 +35,6 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }
-
     @Override
     public String getPassword() {
         return password;
@@ -66,27 +65,4 @@ public class User implements UserDetails {
     }
 
 
-    // converting User to UserDto
-    public static UserDto toDto(User user) {
-        return UserDto.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .role(user.getRole())
-                .active(user.isActive())
-                .build();
-    }
-
-    // converting UserDto to User
-    public static User fromDto(UserDto dto) {
-        return User.builder()
-                .id(dto.getId())
-                .username(dto.getUsername())
-                .email(dto.getEmail())
-                .password(dto.getPassword())
-                .role(dto.getRole())
-                .active(dto.isActive())
-                .build();
-    }
 }
