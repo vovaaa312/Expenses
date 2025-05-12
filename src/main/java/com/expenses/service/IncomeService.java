@@ -1,7 +1,10 @@
 package com.expenses.service;
 
+import com.expenses.model.dTo.IncomeDto;
+import com.expenses.model.dTo.mapper.IncomeMapper;
 import com.expenses.model.incomes.Income;
 import com.expenses.repository.IncomeRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,53 +13,50 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class IncomeService {
+
     private final IncomeRepository incomeRepository;
 
-    public List<Income> findAll() {
-        return incomeRepository.findAll();
-    }
-
     public Income findById(String id) {
-        return incomeRepository.findIncomeById(id).orElseThrow();
+        return incomeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Income not found with id: " + id));
     }
 
     public List<Income> findAllByUserId(String userId) {
-        return incomeRepository.findAllByUserId(userId).orElseThrow();
+        return incomeRepository.findAllByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("No incomes found for user: " + userId));
     }
+
+
 
     public Income save(Income income) {
         return incomeRepository.save(income);
     }
 
     public Income update(Income income) {
-        Income existedIncome = incomeRepository.findIncomeById(income.getId()).orElseThrow();
-
-        existedIncome.setName(income.getName());
-        existedIncome.setDescription(income.getDescription());
-        existedIncome.setAmount(income.getAmount());
-        existedIncome.setDate(income.getDate());
-        existedIncome.setCategory(income.getCategory());
-        existedIncome.setUserId(income.getUserId());
-
-
-        return incomeRepository.save(existedIncome);
+        incomeRepository.findById(income.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Income not found with id: " + income.getId()));
+        return incomeRepository.save(income);
     }
 
     public Income delete(String id) {
-        Income existedIncome = incomeRepository.findIncomeById(id).orElseThrow();
-        incomeRepository.delete(existedIncome);
-        return existedIncome;
+        Income income = incomeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Income not found with id: " + id));
+        incomeRepository.delete(income);
+        return income;
     }
 
     public List<Income> findAllByDateBetweenAndUserId(String startDate, String endDate, String userId) {
-        return incomeRepository.findAllByDateBetweenAndUserId(startDate, endDate, userId).orElse(null);
+        return incomeRepository.findAllByDateBetweenAndUserId(startDate, endDate, userId)
+                .orElseThrow(() -> new EntityNotFoundException("No incomes found for user in the specified date range"));
     }
 
     public List<Income> findAllByDateAfterAndUserId(String startDate, String userId) {
-        return incomeRepository.findAllByDateAfterAndUserId(startDate, userId).orElse(null);
+        return incomeRepository.findAllByDateAfterAndUserId(startDate, userId)
+                .orElseThrow(() -> new EntityNotFoundException("No incomes found for user after the specified date"));
     }
 
     public List<Income> findAllByDateBeforeAndUserId(String endDate, String userId) {
-        return incomeRepository.findAllByDateBeforeAndUserId(endDate, userId).orElse(null);
+        return incomeRepository.findAllByDateBeforeAndUserId(endDate, userId)
+                .orElseThrow(() -> new EntityNotFoundException("No incomes found for user before the specified date"));
     }
 }

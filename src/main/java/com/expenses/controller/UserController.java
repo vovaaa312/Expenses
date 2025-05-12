@@ -21,21 +21,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 @CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
-//@PreAuthorize("hasRole('SYSTEM_ADMIN')")
 public class UserController {
     private final AuthService authService;
     private final UserService userService;
 
-//    @PreAuthorize("hasAuthority('admin:read')")
-//    @GetMapping("/getAll")
-//    public ResponseEntity<?> getAllUsers() {
-//        List<UserDto> userDtos = userService
-//                .findAll()
-//                .stream()
-//                .map(User::toDto)
-//                .collect(Collectors.toList());
-//        return ResponseEntity.ok(userDtos);
-//    }
+
 
     @PreAuthorize("hasAuthority('admin:read')")
     @GetMapping("/getAll")
@@ -55,14 +45,7 @@ public class UserController {
     @PutMapping("/update")
     public ResponseEntity<?> updateUser(
             @RequestBody UserDto userDto) {
-//        if (userService.findAuthUserByUsername(user.getUsername()).isPresent()) {
-//            String errorMessage = "User with username: {" + user.getUsername() + "} already exists";
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-//        }
-//        if(userService.findAuthUserByEmail(user.getEmail()).isPresent()){
-//            String errorMessage = "User with email: {" + user.getEmail() + "} already exists";
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-//        }
+
 
         User updatedUser = userService.updateUser(userDto.getId(), UserMapper.toEntity(userDto));
         return ResponseEntity.ok(UserMapper.toDto(updatedUser));
@@ -83,13 +66,6 @@ public class UserController {
                 .ok(UserMapper.toDto(userService.deleteUser(id)));
     }
 
-//    @PreAuthorize("isAuthenticated()")
-//    @GetMapping("/isAdmin")
-//    public ResponseEntity<Boolean> isAdmin(@RequestHeader("Authorization") String authHeader) {
-//        User authenticatedUser = authService.getAuthenticatedUser(authHeader);
-//        boolean isAdmin = authenticatedUser.getRole().equals(SystemRole.SYSTEM_ADMIN);
-//        return ResponseEntity.ok(isAdmin);
-//    }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/isAdmin")

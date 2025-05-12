@@ -10,11 +10,10 @@ public class ExpenseDto {
     private String id;
     private String name;
     private String description;
-    private double price;
     private double amount;
     private String date;
     private String category;
     private String userId;
-
+    private double price;
 
 }

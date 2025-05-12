@@ -2,6 +2,7 @@ package com.expenses.service;
 
 import com.expenses.model.expense.Expense;
 import com.expenses.repository.ExpenseRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +19,13 @@ public class ExpenseService {
     }
 
     public Expense findById(String id) {
-        return expenseRepository.findExpenseById(id).orElseThrow();
+        return expenseRepository.findExpenseById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Expense not found with id: " + id));
     }
 
     public List<Expense> findAllByUserId(String userId) {
-        return expenseRepository.findAllByUserId(userId).orElseThrow();
+        return expenseRepository.findAllByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("No expenses found for user: " + userId));
     }
 
     public Expense save(Expense expense) {
@@ -31,7 +34,7 @@ public class ExpenseService {
 
     public Expense update(Expense expense) {
         expenseRepository.findExpenseById(expense.getId())
-                .orElseThrow();
+                .orElseThrow(() -> new EntityNotFoundException("Expense not found with id: " + expense.getId()));
 
         return expenseRepository.save(
                 Expense.builder()
@@ -48,24 +51,29 @@ public class ExpenseService {
     }
 
     public Expense delete(String id) {
-        Expense existedExpense = expenseRepository.findExpenseById(id).orElseThrow();
+        Expense existedExpense = expenseRepository.findExpenseById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Expense not found with id: " + id));
         expenseRepository.delete(existedExpense);
         return existedExpense;
     }
 
     public List<Expense> findAllByDateBetween(String startDate, String endDate) {
-        return expenseRepository.findAllByDateBetween(startDate, endDate).orElse(null);
+        return expenseRepository.findAllByDateBetween(startDate, endDate)
+                .orElseThrow(() -> new EntityNotFoundException("No expenses found in date range"));
     }
 
     public List<Expense> findAllByDateBetweenAndUserId(String startDate, String endDate, String userId) {
-        return expenseRepository.findAllByDateBetweenAndUserId(startDate, endDate, userId).orElse(null);
+        return expenseRepository.findAllByDateBetweenAndUserId(startDate, endDate, userId)
+                .orElseThrow(() -> new EntityNotFoundException("No expenses found for user in date range"));
     }
 
     public List<Expense> findAllByDateAfterAndUserId(String startDate, String userId) {
-        return expenseRepository.findAllByDateAfterAndUserId(startDate, userId).orElse(null);
+        return expenseRepository.findAllByDateAfterAndUserId(startDate, userId)
+                .orElseThrow(() -> new EntityNotFoundException("No expenses found for user after date"));
     }
 
     public List<Expense> findAllByDateBeforeAndUserId(String endDate, String userId) {
-        return expenseRepository.findAllByDateBeforeAndUserId(endDate, userId).orElse(null);
+        return expenseRepository.findAllByDateBeforeAndUserId(endDate, userId)
+                .orElseThrow(() -> new EntityNotFoundException("No expenses found for user before date"));
     }
 }
