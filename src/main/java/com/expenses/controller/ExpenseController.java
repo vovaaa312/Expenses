@@ -5,13 +5,13 @@ import com.expenses.model.dTo.mapper.ExpenseMapper;
 import com.expenses.model.expense.Expense;
 import com.expenses.model.user.User;
 import com.expenses.service.ExpenseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/expenses")

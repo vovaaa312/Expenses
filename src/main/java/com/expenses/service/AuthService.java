@@ -53,7 +53,6 @@ public class AuthService {
     }
 
     public AuthResponse authenticate(AuthRequest request) {
-        String pass = passwordEncoder.matches(request.getPassword(), userRepository.findUserByUsername(request.getUsername()).get().getPassword()) ? "true" : "false";
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()
@@ -70,11 +69,7 @@ public class AuthService {
                 .build();
     }
 
-    public User getAuthenticatedUser(String authHeader) {
-        String token = authHeader.substring(7); // Удаляем "Bearer "
-        String userId = jwtService.extractUserId(token);
-        return userRepository.findUsersById(userId).orElseThrow(() -> new UserNotFoundException("User not found."));
-    }
+
 
 
 }

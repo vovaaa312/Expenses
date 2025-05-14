@@ -3,9 +3,11 @@ package com.expenses.model.dTo;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Data
+
 public class ExpenseDto {
     private String id;
     private String name;

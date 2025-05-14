@@ -19,9 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 public class JwtController {
 
-    private final JwtService jwtService;
-    private final UserService userService;
-
     @GetMapping("/extractUsername")
     public ResponseEntity<?> extractUsername(
             @AuthenticationPrincipal User principal
@@ -30,18 +27,6 @@ public class JwtController {
         return ResponseEntity.ok(principal.getUsername());
     }
 
-//    @GetMapping("/extractByToken")
-//    public ResponseEntity<?> findByUsername(
-//            @RequestHeader("Authorization") String authHeader
-//    ) {
-//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or missing Authorization header");
-//        }
-//        String token = authHeader.substring(7); // Remove "Bearer " prefix
-//        String username = jwtService.extractUsername(token);
-//        User user = userService.findUserByUsername(username);
-//        return ResponseEntity.ok(UserMapper.toDto(user));
-//    }
 
     @GetMapping("/extractAuthenticated")
     public ResponseEntity<?> extractAuthenticated(

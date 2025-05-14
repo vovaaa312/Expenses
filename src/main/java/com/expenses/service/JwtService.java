@@ -1,4 +1,5 @@
 package com.expenses.service;
+
 import com.expenses.model.user.User;
 import com.expenses.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -9,6 +10,8 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,24 +23,14 @@ import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
+
 public class JwtService {
 
-    private static final String SECRET_KEY = "hU4i4pXSkP1xnAmQR30pnIShzkq3Rv0n9HopudE+viQ=";
-    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
-    private final UserRepository userRepository;
+    private static String SECRET_KEY;
 
-    public String extractUserId(String jwt) {
-//        Claims claims = extractAllClaims(jwt);
-//        String userId = claims.get("userId", String.class);
-//        if (userId == null) {
-//            userId = (String) claims.get("userId");
-//        }
-
-        User user = userRepository.findUserByUsername(extractUsername(jwt)).get();
-       String userId = user.getId();
-
-
-        return userId;
+    @Value("${jwt.secret-key}")
+    public void setSecretKey(String secretKey) {
+        SECRET_KEY = secretKey;
     }
 
     public String extractUsername(String jwt) {
@@ -75,6 +68,7 @@ public class JwtService {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
     public boolean isTokenValid(String jwt, UserDetails userDetails) {
         final String username = extractUsername(jwt);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(jwt);
@@ -88,7 +82,6 @@ public class JwtService {
     private Date extractExpiration(String jwt) {
         return extractClaim(jwt, Claims::getExpiration);
     }
-
 
 
     private Claims extractAllClaims(String jwt) {

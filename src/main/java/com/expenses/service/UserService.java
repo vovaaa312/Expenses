@@ -55,7 +55,6 @@ public class UserService {
             throw new UserWithUsernameExistsException("User with username: {" + user.getUsername() + "} already exists");
         }
 
-        // Проверка на существующий email
         if (!existingUser.getEmail().equals(user.getEmail()) &&
                 userRepository.findUserByEmail(user.getEmail()).isPresent()) {
             throw new UserWithEmailExistsException("User with email: {" + user.getEmail() + "} already exists");
